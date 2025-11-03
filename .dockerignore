@@ -8,4 +8,6 @@ __pycache__/
 data/
 notebooks/
 .gitignore
+*.pdf
 README.md
+*.ipynb

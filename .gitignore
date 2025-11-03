@@ -37,3 +37,4 @@ docker-compose.override.yml
 # その他
 *.log
 .DS_Store
+*.pdf
