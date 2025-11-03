@@ -1,11 +1,14 @@
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.prompts import PromptTemplate
-from langchain_openai import ChatOpenAI
-from langchain_openai import OpenAIEmbeddings
+from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
+from langchain_google_genai.chat_models import ChatGoogleGenerativeAI
 from langchain_chroma import Chroma
 
 import os
-import config
+from dotenv import load_dotenv
+
+load_dotenv()
+api_key = os.getenv("GOOGLE_API_KEY")
 
 main_path = os.path.dirname(os.path.abspath(__file__))
 os.chdir(main_path)
@@ -15,14 +18,14 @@ loader = PyPDFLoader("LangChain株式会社IR資料.pdf")
 documents = loader.load()
 
 # OpenAIの埋め込みモデルを設定
-embeddings_model = OpenAIEmbeddings(api_key=config.OPENAI_API_KEY,model="text-embedding-3-small")
+embeddings_model = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
 
 
 # Chromaデータベースを作成
-db = Chroma.from_documents(documents=documents,embedding=embeddings_model)
+db = Chroma.from_documents(documents=documents, embedding=embeddings_model)
 
 # OpenAIのLLM設定
-llm = ChatOpenAI(api_key=config.OPENAI_API_KEY,model_name="gpt-4o-mini")
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
 
 # プロンプトテンプレート
 template = """
@@ -41,7 +44,7 @@ prompt = PromptTemplate(input_variables=["document_snippet","question"],template
 # チャットボット
 def chatbot(question):
     question_embedding = embeddings_model.embed_query(question)
-    document_snippet = db.similarity_search_by_vector(question_embedding,k=3)
+    document_snippet = db.similarity_search_by_vector(question_embedding,k=5)
     print(f"document_snippet:{document_snippet}")
     filled_prompt = prompt.format(document_snippet=document_snippet,question=question)
     response = llm.invoke(filled_prompt)

@@ -1,12 +1,15 @@
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
-from langchain_openai import OpenAIEmbeddings
+from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
 from scipy.spatial.distance import cosine
-import config
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+api_key = os.getenv("GOOGLE_API_KEY")
 
 # OpenAI埋め込みモデルを設定
-embeddings_model = OpenAIEmbeddings(api_key=config.OPENAI_API_KEY,model="text-embedding-3-small")
+embeddings_model = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
 
 # 文書データの設定
 documents = [
@@ -17,7 +20,7 @@ documents = [
 ]
 
 # Chromaデータベースを作成
-db = Chroma.from_documents(documents=documents,embedding=embeddings_model)
+db = Chroma.from_documents(documents=documents, embedding=embeddings_model)
 
 query = "AIの発展について教えて"
 
@@ -27,5 +30,5 @@ result = db.similarity_search_by_vector(query_embedding)
 
 for doc in result:
     doc_embedding = embeddings_model.embed_query(doc.page_content)
-    similarity = 1 - cosine(query_embedding,doc_embedding)
+    similarity = 1 - cosine(query_embedding, doc_embedding)
     print(f"類似度({doc.page_content}):{similarity}") 
