@@ -7,8 +7,8 @@ LangChainのライブラリ依存問題が発生
 - LangChain v0.3系は、Pydantic v2系を前提とする
 
 ### ページ構成
-TOP
- ├―PDFをアップロードするページ
+TOP<br>
+ ├―PDFをアップロードするページ<br>
  ├―PDFに対して質問をするチャットページ
  
  
