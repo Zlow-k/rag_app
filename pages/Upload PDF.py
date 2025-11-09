@@ -11,8 +11,6 @@ def main() -> None:
 
     st.write("Hello, Streamlit!")
 
-    st.sidebar.success("Welcome to the sidebar!")
-
     st.markdown(
         """
         # AIチャットアプリへようこそ！
